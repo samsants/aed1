@@ -1,6 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define SUCESSO          1
+#define FALHA           -1
+
+#define TAMANHO_MAXIMO_LISTA 50
+
+typedef struct { 
+     unsigned int chave;
+     int parteReal;
+     int parteCentavo;
+} Celula;
+
+typedef struct {
+    Celula celulas  [TAMANHO_MAXIMO_LISTA];
+    unsigned int    tamanho;
+} ListaLinear; 
+
+int criarListaVazia(ListaLinear * lista) {
+    lista->tamanho = 0;
+    return (SUCESSO);
+}
+
+int insFinal (ListaLinear * lista, Celula celula) {
+    int i;
+    Celula auxiliar;
+    
+    if (lista->tamanho == TAMANHO_MAXIMO_LISTA) {
+        return(FALHA);                 // Overflow da lista. 
+    }
+    else { 
+       // 
+       // Insere a célula recebida após a última célula atualmente
+       // presente na lista
+       // 
+       lista->celulas[lista->tamanho] = celula;
+       lista->tamanho++;
+       return(SUCESSO);
+    }
+}
+
 void imprimeCasaCentenas(int n){
     switch(n){
         case 100: 
@@ -155,6 +194,10 @@ void imprimeInteiros(int inteiros){
         printf("E ");
     }
     }
+    if(inteiros==1000000){
+        printf("DE REAIS ");
+        return;
+    }
 
     if(milhaoInteiro>1){
         imprimeUnidade(milhaoInteiro);
@@ -201,9 +244,10 @@ void imprimeInteiros(int inteiros){
     if(centenaDeMilharInteiro==0&&dezenaDeMilharInteiro==0&&milharInteiro>=1){
         imprimeUnidade(milharInteiro);
         printf("MIL ");
-        if(centenaInteiro>0||dezenaInteiro>0||unidadeInteiro>0){
+    }
+
+    if((milhaoInteiro>0||centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0)&&(centenaInteiro==0)){
             printf("E ");
-        }
     }
 
     if(centenaInteiro>0){
@@ -221,6 +265,9 @@ void imprimeInteiros(int inteiros){
                 imprimeUnidade(unidadeInteiro);
             }
         }else{
+            if((milhaoInteiro>0||centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0)){
+            printf("E ");
+            }
             imprimeCasaCentenas(centenaInteiro*100);
             if(dezenaInteiro>=1){
                 printf("E ");
@@ -259,10 +306,6 @@ void imprimeInteiros(int inteiros){
     }
     if(inteiros>1&&inteiros<1000000){
         printf("REAIS ");
-        return;
-    }
-    if(inteiros==1000000){
-        printf("DE REAIS ");
         return;
     }
 }
@@ -314,14 +357,36 @@ int main(){
     int casos; 
     int parteInteira, parteDecimal;
     int i;
+    ListaLinear  listaLinear;
+    Celula       celula;
+    int resultado;
+
+    resultado = criarListaVazia(&listaLinear);
 
     scanf("%d",&casos);
     for(i=0;i<casos;i++){
-        scanf("%d,%d",&parteInteira ,&parteDecimal); 
-        imprimeInteiros(parteInteira);
-        printf("E ");
-        imprimeCentavos(parteDecimal);
-        printf("\n");
+        scanf("%d,%d", &celula.parteReal,&celula.parteCentavo);
+        resultado = insFinal(&listaLinear, celula);
+    }
+
+   
+    
+    if (listaLinear.tamanho == 0) { 
+       printf("Atenção: A lista está vazia.\n");   
+    }
+    else { 
+       for (i = 0; (i < listaLinear.tamanho); i++) {
+            parteInteira = listaLinear.celulas[i].parteReal;
+            parteDecimal = listaLinear.celulas[i].parteCentavo;
+            if(parteInteira>0){
+                imprimeInteiros(parteInteira);
+                if(parteDecimal!=0){
+                    printf("E ");
+                }
+            }
+            imprimeCentavos(parteDecimal);
+            printf("\n");
+       }
     }
 
     return 0; 

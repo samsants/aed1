@@ -1,42 +1,35 @@
-#include <stdio.h>
-#include <stdbool.h>
-
-bool ehPrimo(int num) {
-    if (num < 2) {
-        return false;
-    }
-
-    for (int i = 2; i * i <= num; i++) {
-        if (num % i == 0) {
-            return false;
+    #include <stdio.h>
+     
+    // Função para verificar se um número é primo
+    int ehPrimo(int num) {
+        int i;
+        if (num <= 1) {
+            return 0; // Números menores ou iguais a 1 não são primos
         }
-    }
-
-    return true;
-}
-
-int main() {
-    int n;
-    scanf("%d", &n);
-
-    // Construindo a lista de números primos de 2 até n
-    int primos[10000]; // Supomos que n não ultrapasse 10000
-    int p = 0;
-    for (int i = 2; i <= n; i++) {
-        if (ehPrimo(i)) {
-            primos[p] = i;
-            p++;
+        for (i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return 0; // Números divisíveis por outros além de 1 e ele mesmo não são primos
+            }
         }
+        return 1; // Se passou pelos testes, é primo
     }
-
-    // Lendo x e y
-    int x, y;
-    scanf("%d %d", &x, &y);
-
-    // Imprimindo os primos na posição x até y
-    for (int i = x - 1; i < y; i++) {
-        printf("%d ", primos[i]);
+     
+    int main() {
+        // Entrada de dados
+        int x, y;
+        int i;
+        scanf("%d %d", &x, &y);
+     
+        // Contagem de números primos no intervalo
+        int quantidadePrimos = 0;
+        for (i = x; i <= y; i++) {
+            if (ehPrimo(i)) {
+                quantidadePrimos++;
+            }
+        }
+     
+        // Saída de resultados
+        printf("%d\n", quantidadePrimos);
+     
+        return 0;
     }
-
-    return 0;
-}
