@@ -2,166 +2,188 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 1000
 #define SUCESSO 1
 #define FALHA -1
 
+typedef struct nodo {
+    int data;
+    struct nodo*depois;
+    struct nodo*prev;
+} nodo;
+
 typedef struct {
-    int elementos[MAX];
-    int inicio;
-    int fim;
+    nodo*frente;
+    nodo*tras;
 } Deque;
 
-int criarDeque(Deque *d) {
-    d->inicio = -1;
-    d->fim = -1;
+typedef struct {
+    char operacao[15];
+    int elem;
+} Operacao;
+
+int criarDeque(Deque*d) {
+    d->frente=NULL;
+    d->tras=NULL;
     return SUCESSO;
 }
 
-int estaVazio(Deque *d) {
-    return d->inicio == -1 && d->fim == -1;
-}
-
-int estaCheio(Deque *d) {
-    return (d->fim + 1) % MAX == d->inicio;
-}
-
-int pushEsquerda(Deque *d, int elem) {
-    if (estaCheio(d)) {
+int pushEsquerda(Deque*d,int elem) {
+    nodo*novonodo=(nodo*)malloc(sizeof(nodo));
+    if (!novonodo) {
         return FALHA;
     }
 
-    if (estaVazio(d)) {
-        d->inicio = 0;
-        d->fim = 0;
-    } else {
-        d->inicio = (d->inicio - 1 + MAX) % MAX;
-    }
+    novonodo->data=elem;
+    novonodo->depois=d->frente;
+    novonodo->prev=NULL;
 
-    d->elementos[d->inicio] = elem;
+    if (d->frente==NULL) {
+        d->frente=novonodo;
+        d->tras=novonodo;
+    } else {
+        d->frente->prev=novonodo;
+        d->frente=novonodo;
+    }
 
     return SUCESSO;
 }
 
-int pushDireita(Deque *d, int elem) {
-    if (estaCheio(d)) {
+int pushDireita(Deque*d,int elem) {
+    nodo*novonodo=(nodo *)malloc(sizeof(nodo));
+    if (!novonodo) {
         return FALHA;
     }
 
-    if (estaVazio(d)) {
-        d->inicio = 0;
-        d->fim = 0;
-    } else {
-        d->fim = (d->fim + 1) % MAX;
-    }
+    novonodo->data=elem;
+    novonodo->depois=NULL;
+    novonodo->prev=d->tras;
 
-    d->elementos[d->fim] = elem;
+    if (d->tras==NULL) {
+        d->frente=novonodo;
+        d->tras=novonodo;
+    } else {
+        d->tras->depois=novonodo;
+        d->tras=novonodo;
+    }
 
     return SUCESSO;
 }
 
 int popEsquerda(Deque *d) {
-    if (estaVazio(d)) {
+    if (d->frente==NULL) {
         return FALHA;
     }
 
-    int elem = d->elementos[d->inicio];
+    int elem=d->frente->data;
+    nodo*temp=d->frente;
 
-    if (d->inicio == d->fim) {
-        // O deque ficou vazio após a remoção
-        d->inicio = -1;
-        d->fim = -1;
+    if (d->frente==d->tras) {
+        d->frente=NULL;
+        d->tras=NULL;
     } else {
-        d->inicio = (d->inicio + 1) % MAX;
+        d->frente=d->frente->depois;
+        d->frente->prev=NULL;
     }
 
+    free(temp);
     return elem;
 }
 
 int popDireita(Deque *d) {
-    if (estaVazio(d)) {
+    if(d->tras==NULL) {
         return FALHA;
     }
 
-    int elem = d->elementos[d->fim];
+    int elem=d->tras->data;
+    nodo*temp=d->tras;
 
-    if (d->inicio == d->fim) {
-        // O deque ficou vazio após a remoção
-        d->inicio = -1;
-        d->fim = -1;
+    if (d->frente==d->tras) {
+        d->frente=NULL;
+        d->tras=NULL;
     } else {
-        d->fim = (d->fim - 1 + MAX) % MAX;
+        d->tras=d->tras->prev;
+        d->tras->depois=NULL;
     }
 
+    free(temp);
     return elem;
 }
 
-void listEsquerda(Deque *d) {
-    if (estaVazio(d)) {
-        return;
+int listEsquerda(Deque*d) {
+    if (d->frente==NULL) {
+        printf("vazio\n");
+        return FALHA;
     }
 
-    int i = d->inicio;
-    while (i != d->fim) {
-        printf("%d ", d->elementos[i]);
-        i = (i + 1) % MAX;
+    nodo*atual=d->frente;
+    while (atual!=NULL) {
+        printf("%d ",atual->data);
+        atual=atual->depois;
     }
-    printf("%d\n", d->elementos[i]);
+
+    printf("\n");
+    return SUCESSO;
 }
 
-void listDireita(Deque *d) {
-    if (estaVazio(d)) {
+int listDireita(Deque*d) {
+    if (d->tras==NULL) {
         printf("vazio\n");
-        return;
+        return FALHA;
     }
 
-    int i = d->fim;
-    while (i != d->inicio) {
-        printf("%d ", d->elementos[i]);
-        i = (i - 1 + MAX) % MAX;
+    nodo*atual=d->tras;
+    while (atual!=NULL) {
+        printf("%d ",atual->data);
+        atual=atual->prev;
     }
-    printf("%d\n", d->elementos[i]);
+
+    printf("\n");
+    return SUCESSO;
 }
 
 int main() {
     Deque d;
-    criarDeque(&d);
+    Operacao operacoes[100]; 
+    int numOperacoes = 0;
 
-    char operacao[15];
+    do {
+        scanf("%s", operacoes[numOperacoes].operacao);
 
-    while (1) {
-        scanf("%s", operacao);
+        if (strcmp(operacoes[numOperacoes].operacao,"pushEsquerda(d,")==0||
+            strcmp(operacoes[numOperacoes].operacao,"pushDireita(d,")==0) {
+            scanf("%d", &operacoes[numOperacoes].elem);
+        }
 
-        if (strcmp(operacao, "criarDeque(d)") == 0) {
+        numOperacoes++;
+    } while (strcmp(operacoes[numOperacoes-1].operacao,"fim")!=0);
+
+    for (int i = 0; i < numOperacoes; i++) {
+        if (strcmp(operacoes[i].operacao,"criarDeque(d)")==0) {
             criarDeque(&d);
-        } else if (strcmp(operacao, "pushEsquerda(d,") == 0) {
-            int elem;
-            scanf("%d", &elem);
-            if (pushEsquerda(&d, elem) == FALHA) {
+        } else if (strcmp(operacoes[i].operacao,"pushEsquerda(d,")==0) {
+            if (pushEsquerda(&d,operacoes[i].elem)==FALHA) {
+                printf("falha\n");
                 return 0;
             }
-        } else if (strcmp(operacao, "pushDireita(d,") == 0) {
-            int elem;
-            scanf("%d", &elem);
-            if (pushDireita(&d, elem) == FALHA) {
+        } else if (strcmp(operacoes[i].operacao,"pushDireita(d,")==0) {
+            if (pushDireita(&d, operacoes[i].elem)==FALHA) {
+                printf("falha\n");
                 return 0;
             }
-        } else if (strcmp(operacao, "popEsquerda(d)") == 0) {
-            int result = popEsquerda(&d);
-            if (result == FALHA) {
-                return 0;
-            } 
-        } else if (strcmp(operacao, "popDireita(d)") == 0) {
-            int result = popDireita(&d);
-            if (result == FALHA) {
-                return 0;
+        } else if (strcmp(operacoes[i].operacao,"popEsquerda(d)")==0) {
+            int resultado=popEsquerda(&d);
+            if (resultado==FALHA) {
+                printf("falha\n");
             }
-        } else if (strcmp(operacao, "listEsquerda(d)") == 0) {
+        } else if (strcmp(operacoes[i].operacao,"popDireita(d)")==0) {
+            int resultado=popDireita(&d);
+            if (resultado==FALHA) {
+                printf("falha\n");
+            }
+        } else if (strcmp(operacoes[i].operacao,"listEsquerda(d)")==0) {
             listEsquerda(&d);
-        } else if (strcmp(operacao, "listDireita(d)") == 0) {
+        } else if (strcmp(operacoes[i].operacao,"listDireita(d)")==0) {
             listDireita(&d);
-        } else if (strcmp(operacao, "fim") == 0) {
-            break;
         }
     }
 
