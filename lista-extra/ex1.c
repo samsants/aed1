@@ -151,11 +151,17 @@ void imprimeInteiros(int inteiros){
     if(milhaoInteiro==1){
         imprimeUnidade(milhaoInteiro);
         printf("MILHAO ");
+        if(centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0||centenaInteiro>0||dezenaInteiro>0||unidadeInteiro>0){
+        printf("E ");
+    }
     }
 
     if(milhaoInteiro>1){
         imprimeUnidade(milhaoInteiro);
         printf("MILHOES ");
+        if(centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0||centenaInteiro>0||dezenaInteiro>0||unidadeInteiro>0){
+        printf("E ");
+    }
     }
 
     if(centenaDeMilharInteiro>1){
@@ -165,9 +171,10 @@ void imprimeInteiros(int inteiros){
         }
     }
     else if(centenaDeMilharInteiro==1){
-        printf("CENTO ");
         if(dezenaDeMilharInteiro>=1||milharInteiro>=1){
-            printf("E ");
+            printf("CENTO E ");
+        }else{
+            imprimeCasaCentenas(centenaDeMilharInteiro*100);
         }
     }
 
@@ -175,6 +182,7 @@ void imprimeInteiros(int inteiros){
         imprimeCasaDezenas(dezenaDeMilharInteiro*10);
         if(milharInteiro>=1){
             printf("E ");
+            imprimeUnidade(milharInteiro);
         }
     }
 
@@ -184,6 +192,78 @@ void imprimeInteiros(int inteiros){
         }else{
             imprimeDezenas(dezenaDeMilharInteiro*10+milharInteiro);
         }
+    }
+
+    if(centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0){
+        printf("MIL ");
+    }
+
+    if(centenaDeMilharInteiro==0&&dezenaDeMilharInteiro==0&&milharInteiro>=1){
+        imprimeUnidade(milharInteiro);
+        printf("MIL ");
+        if(centenaInteiro>0||dezenaInteiro>0||unidadeInteiro>0){
+            printf("E ");
+        }
+    }
+
+    if(centenaInteiro>0){
+        if(centenaInteiro==1){
+            printf("CENTO E ");
+            if(dezenaInteiro==1&&unidadeInteiro>=1&&unidadeInteiro<=9){
+                imprimeDezenas(dezenaInteiro*10+unidadeInteiro);
+            }
+
+            if(dezenaInteiro>1){
+                imprimeCasaDezenas(dezenaInteiro*10);
+                if(unidadeInteiro>=1){
+                    printf("E ");
+                }
+                imprimeUnidade(unidadeInteiro);
+            }
+        }else{
+            imprimeCasaCentenas(centenaInteiro*100);
+            if(dezenaInteiro>=1){
+                printf("E ");
+            }
+            if(dezenaInteiro>1){
+                imprimeCasaDezenas(dezenaInteiro*10);
+                    if(unidadeInteiro>=1){
+                    printf("E ");
+                    }
+                imprimeUnidade(unidadeInteiro);
+            }
+        }
+        
+    }else{
+        if(dezenaInteiro>1){
+            imprimeCasaDezenas(dezenaInteiro*10);
+            if(unidadeInteiro>=1){
+                imprimeUnidade(unidadeInteiro);
+            }
+        }
+
+        if(dezenaInteiro==1){
+            if(unidadeInteiro==0){
+                imprimeDezenas(dezenaInteiro*10);
+            }else{
+                imprimeDezenas(dezenaInteiro*10+unidadeInteiro);
+            }
+        }else{
+            imprimeUnidade(unidadeInteiro);
+        }
+    }
+
+    if(inteiros==1){
+        printf("REAL ");
+        return;
+    }
+    if(inteiros>1&&inteiros<1000000){
+        printf("REAIS ");
+        return;
+    }
+    if(inteiros==1000000){
+        printf("DE REAIS ");
+        return;
     }
 }
 
@@ -208,6 +288,9 @@ void imprimeCentavos(int centavos){
     if(centavos>=20&&centavos<=99){
         imprimeCasaDezenas(dezenasCentavos*10);
         if(unidadesCentavos>0){
+            if(unidadesCentavos>=1){
+                printf("E ");
+            }
             imprimeUnidade(unidadesCentavos);
         }
         imprimeNomeCentavosPlural();
@@ -228,13 +311,18 @@ void imprimeCentavos(int centavos){
 }
 
 int main(){
+    int casos; 
     int parteInteira, parteDecimal;
+    int i;
 
-    scanf("%d,%d",&parteInteira ,&parteDecimal); 
-    imprimeInteiros(parteInteira);
-    printf("\n");
-    imprimeCentavos(parteDecimal);
-    
+    scanf("%d",&casos);
+    for(i=0;i<casos;i++){
+        scanf("%d,%d",&parteInteira ,&parteDecimal); 
+        imprimeInteiros(parteInteira);
+        printf("E ");
+        imprimeCentavos(parteDecimal);
+        printf("\n");
+    }
 
     return 0; 
 }
