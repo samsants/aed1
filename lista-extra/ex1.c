@@ -246,7 +246,7 @@ void imprimeInteiros(int inteiros){
         printf("MIL ");
     }
 
-    if((milhaoInteiro>0||centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0)&&(centenaInteiro==0)){
+    if((milhaoInteiro>0||centenaDeMilharInteiro>0||dezenaDeMilharInteiro>0||milharInteiro>0)&&(centenaInteiro==0)&&(dezenaInteiro>0||unidadeInteiro>0)){
             printf("E ");
     }
 
